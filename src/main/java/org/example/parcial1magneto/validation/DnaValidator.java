@@ -1,4 +1,4 @@
-package validation;
+package org.example.parcial1magneto.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -24,7 +24,7 @@ public class DnaValidator implements ConstraintValidator<ValidDna,String[]> {
         //2. Verificar tamaño de cadenas y que contengan solo A,T,C o G
 
         for (String row : dna){
-            if (row == null || row.length() != n || row.matches("[ATCG]+")){
+            if (row == null || row.length() != n || !row.matches("[ATCG]+")){
                 return false;
             }
         }

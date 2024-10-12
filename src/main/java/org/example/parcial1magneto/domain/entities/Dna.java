@@ -1,4 +1,4 @@
-package domain.entities;
+package org.example.parcial1magneto.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.*;

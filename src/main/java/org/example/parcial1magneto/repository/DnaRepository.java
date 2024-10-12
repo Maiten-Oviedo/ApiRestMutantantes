@@ -1,6 +1,6 @@
-package repository;
+package org.example.parcial1magneto.repository;
 
-import domain.entities.Dna;
+import org.example.parcial1magneto.domain.entities.Dna;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

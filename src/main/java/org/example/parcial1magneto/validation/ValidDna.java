@@ -1,4 +1,4 @@
-package validation;
+package org.example.parcial1magneto.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

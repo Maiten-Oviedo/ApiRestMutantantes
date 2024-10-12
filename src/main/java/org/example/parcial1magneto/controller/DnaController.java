@@ -1,12 +1,12 @@
-package controller;
+package org.example.parcial1magneto.controller;
 
-import domain.dto.DnaRequestDto;
-import domain.dto.DnaResponseDto;
+import org.example.parcial1magneto.domain.dto.DnaRequestDto;
+import org.example.parcial1magneto.domain.dto.DnaResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import services.DnaService;
+import org.example.parcial1magneto.services.DnaService;
 
 @RestController
 @CrossOrigin("*")

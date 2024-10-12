@@ -1,4 +1,4 @@
-package domain.dto;
+package org.example.parcial1magneto.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
