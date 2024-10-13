@@ -9,7 +9,6 @@ import java.util.Optional;
 @Service
 public class DnaService {
 
-
     private final DnaRepository dnaRepository;
 
     //Inyeccion de dependencias de MutantRepository
@@ -21,7 +20,7 @@ public class DnaService {
     private static int n; // Número de filas y columnas del dna
 
 
-    public boolean isMutant(String[] dna){
+    public  boolean isMutant(String[] dna){
         //Convertimos nuestro dna a String para verificar si se encuentra en un nuestra bdd
         String dnaString = String.join(",",dna);
 
@@ -43,52 +42,58 @@ public class DnaService {
 
     };
 
-    public boolean analyzeDna(String[] dna){
-        validateDna(dna); //Validación adicional de caracteres
+    public boolean analyzeDna(String[] dna) {
+        validateDna(dna); // Validación adicional de caracteres
         n = dna.length;
         int secuenceFound = 0;
 
-        //Dado que la matriz es nxn, si es menos que 4 no podemos tener secuencias
-        if (n < 4 ) return true;
-        //Verificamos Horizontales y Verticales
+        // Si la matriz es menor que 4, no puede tener secuencias
+        if (n < SEQUENCE_LENGTH) return false;
 
+        // Verificamos Horizontales y Verticales
         for (int i = 0; i < n; i++) {
-            //Le restamos 4 al límite del for para que las subcadenas no excedan los límites
-            for (int j = 0; j < n-4; j++) {
-                //Verticales
-                //De cada fila sacamos las subcadenas de 4 caracteres
-                if (hasSecuence(dna[i].substring(j,j+4))){
-                    secuenceFound ++;
-                }
-
-                //Horizontales
-                //Extraemos la primera letra de las 4 filas y formamos la nueva cadena
-                if (hasSecuence(new String(new char[]{dna[j].charAt(i), dna[j + 1].charAt(i), dna[j + 2].charAt(i), dna[j + 3].charAt(i)}))){
-                    secuenceFound++;
-                }
-
-                //Si al final de las comprobaciones horizontales y verticales tenemos más de una coincidencia retornamos
-                //true
-                if(secuenceFound > 1) return true;
-            }
-
-        }
-
-        //Verificar Diagonales
-        for (int i = 0; i <= n - 4; i++) {
             for (int j = 0; j <= n - 4; j++) {
-                if (hasSecuence(new String(new char[]{dna[i].charAt(j), dna[i + 1].charAt(j + 1), dna[i + 2].charAt(j + 2), dna[i + 3].charAt(j + 3)}))) {
+                if (hasSecuence(dna[i].substring(j, j + 4))) {
                     secuenceFound++;
                 }
-                if (hasSecuence(new String(new char[]{dna[i].charAt(j + 3), dna[i + 1].charAt(j + 2), dna[i + 2].charAt(j + 1), dna[i + 3].charAt(j)}))) {
+                if (hasSecuence(new String(new char[]{dna[j].charAt(i), dna[j + 1].charAt(i), dna[j + 2].charAt(i), dna[j + 3].charAt(i)}))) {
                     secuenceFound++;
                 }
-                if (secuenceFound > 1) return true;
+                if (secuenceFound > 1) return true; // Al encontrar más de 1 secuencia, es mutante
             }
         }
 
-        return false;
+        // Verificar Diagonales
+        for (int row = 0; row <= n - SEQUENCE_LENGTH; row++) {
+            for (int col = 0; col <= n - SEQUENCE_LENGTH; col++) {
+                if (checkSequenceInDiagonal(dna, row, col, 1, 1)) {
+                    secuenceFound++;
+                }
+            }
+        }
 
+        // Verificación de diagonales ↙ (derecha a izquierda)
+        for (int row = 0; row <= n - SEQUENCE_LENGTH; row++) {
+            for (int col = SEQUENCE_LENGTH - 1; col < n; col++) {
+                if (checkSequenceInDiagonal(dna, row, col, 1, -1)) {
+                    secuenceFound++;
+                }
+            }
+        }
+
+        // Si encontramos más de una secuencia en diagonales, retornamos true
+        return secuenceFound > 1;
+    }
+
+
+    private boolean checkSequenceInDiagonal(String[] dna, int startRow, int startCol, int rowDirection, int colDirection) {
+        char initial = dna[startRow].charAt(startCol);
+        for (int i = 1; i < SEQUENCE_LENGTH; i++) {
+            if (dna[startRow + i * rowDirection].charAt(startCol + i * colDirection) != initial) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean hasSecuence(String secuence){
@@ -99,11 +104,29 @@ public class DnaService {
     }
 
     private void validateDna(String[] dna) {
+        // Validar el input
+        if (dna == null || dna.length == 0) {
+            throw new IllegalArgumentException("El ADN no puede ser null o vacío.");
+        }
+
+        int n = dna.length;
+
+        // Verificar si es un cuadrado NxN
         for (String row : dna) {
-            if (!row.matches("[ATCG]+")) {
-                throw new IllegalArgumentException("Invalid DNA sequence: " + row);
+            if (row == null || row.length() != n) {
+                throw new IllegalArgumentException("El ADN debe ser un cuadrado NxN.");
+            }
+        }
+
+        // Verificar caracteres válidos
+        for (String row : dna) {
+            for (char base : row.toCharArray()) {
+                if ("ATCG".indexOf(base) == -1) {
+                    throw new IllegalArgumentException("El ADN contiene caracteres inválidos.");
+                }
             }
         }
     }
+
 
 }

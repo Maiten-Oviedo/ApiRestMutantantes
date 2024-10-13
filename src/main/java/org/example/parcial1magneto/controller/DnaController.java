@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.example.parcial1magneto.services.DnaService;
 
+import java.util.Collections;
+
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/mutant")
@@ -30,6 +32,8 @@ public class DnaController {
             }
             //De ser falso se devuelve un 403-FORBIDDEN
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(dnaResponseDto);
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
         }catch (Exception e){
             //En caso de errores se pide volver a intentarlo
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
