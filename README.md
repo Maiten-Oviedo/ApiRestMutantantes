@@ -106,7 +106,12 @@ La API estará disponible en tu localHost en el puerto 8080.
     - `400 Bad Request`: Si la secuencia de ADN no es válida (por ejemplo, si no es NxN o contiene caracteres no permitidos).
       ```json
       {
-        "error": "El ADN debe ser un cuadrado NxN con caracteres válidos (A, T, C, G)."
+        "status": 400,
+        "error": "Bad Request",
+        "message": "La solicitud de ADN no es válida.",
+        "details": {
+          "dna": "El array no es N x N."
+        }
       }
       ```
 
