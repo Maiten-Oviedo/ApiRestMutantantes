@@ -13,19 +13,19 @@ public class DnaService {
     private final DnaRepository dnaRepository;
 
     //Inyeccion de dependencias de MutantRepository
-    DnaService(DnaRepository dnaRepository){
+    public DnaService(DnaRepository dnaRepository){
         this.dnaRepository = dnaRepository;
     }
 
     private static final int SEQUENCE_LENGTH = 4; // Cantidad de letras iguales necesarias para que sea una secuencia
-    private static int n; // Numero de filas y columnas del dna
+    private static int n; // Número de filas y columnas del dna
 
 
     public boolean isMutant(String[] dna){
         //Convertimos nuestro dna a String para verificar si se encuentra en un nuestra bdd
         String dnaString = String.join(",",dna);
 
-        Optional<Dna> dnaExist = dnaRepository.findByDna(dnaString); // Utlizamos Optional para el manejo de null
+        Optional<Dna> dnaExist = dnaRepository.findByDna(dnaString); // Utilizamos Optional para el manejo de null
 
         if (dnaExist.isPresent()){
             return dnaExist.get().isMutant(); //Devolvemos el valor que ya posee en la bdd
@@ -44,6 +44,7 @@ public class DnaService {
     };
 
     public boolean analyzeDna(String[] dna){
+        validateDna(dna); //Validación adicional de caracteres
         n = dna.length;
         int secuenceFound = 0;
 
@@ -52,7 +53,7 @@ public class DnaService {
         //Verificamos Horizontales y Verticales
 
         for (int i = 0; i < n; i++) {
-            //Le restamos 4 al limite del for para que las subcadenas no excedan los limites
+            //Le restamos 4 al límite del for para que las subcadenas no excedan los límites
             for (int j = 0; j < n-4; j++) {
                 //Verticales
                 //De cada fila sacamos las subcadenas de 4 caracteres
@@ -61,12 +62,12 @@ public class DnaService {
                 }
 
                 //Horizontales
-                //Extramos la primer letra de las 4 filas y formamos la nueva cadena
+                //Extraemos la primera letra de las 4 filas y formamos la nueva cadena
                 if (hasSecuence(new String(new char[]{dna[j].charAt(i), dna[j + 1].charAt(i), dna[j + 2].charAt(i), dna[j + 3].charAt(i)}))){
                     secuenceFound++;
                 }
 
-                //Si al final de las comprobaciones horizontales y verticales tenemos mas de una coincidencia retornamos
+                //Si al final de las comprobaciones horizontales y verticales tenemos más de una coincidencia retornamos
                 //true
                 if(secuenceFound > 1) return true;
             }
@@ -90,12 +91,19 @@ public class DnaService {
 
     }
 
-
     public boolean hasSecuence(String secuence){
         //Este metodo sirve para corroborar que una cadena de 4 caracteres tenga las mismas letras
         //ya que .chars().distinct().count() nos dice si encontro al menos una diferencia
         //y esto equivaldria a decir que en una secuencia de 4 caracteres al menos uno es distinto.
         return secuence.chars().distinct().count() == 1;
+    }
+
+    private void validateDna(String[] dna) {
+        for (String row : dna) {
+            if (!row.matches("[ATCG]+")) {
+                throw new IllegalArgumentException("Invalid DNA sequence: " + row);
+            }
+        }
     }
 
 }
